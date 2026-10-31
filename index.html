@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0e0a09">
+
+<!-- SEO -->
+<title>Diablo IV Weapon Damage Calculator – Compare Two Weapons</title>
+<meta name="description" content="Free Diablo IV weapon comparison calculator: weapon damage, main stat, additive and multiplicative [x] bonuses, per hit or per second. Comparador de armas disponible en español.">
+<meta name="keywords" content="Diablo 4 weapon comparison, Diablo IV damage calculator, Diablo 4 weapon calculator, Diablo 4 damage buckets, Diablo 4 multiplicative damage, comparador armas Diablo 4, calculadora daño Diablo 4">
+<meta name="author" content="Diablo IV Weapon Damage Calculator">
+<meta name="robots" content="index, follow">
+<!-- TODO: sustituye por tu dominio real tras el despliegue -->
+<link rel="canonical" href="https://TU-DOMINIO.com/">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Diablo IV Weapon Damage Calculator">
+<meta property="og:title" content="Diablo IV Weapon Damage Calculator – Which weapon strikes harder?">
+<meta property="og:description" content="Compare two weapons with the real damage buckets: main stat, additive and multiplicative [x] bonuses. Per hit or per second.">
+<meta property="og:url" content="https://TU-DOMINIO.com/">
+<!-- TODO: sube una imagen 1200x630 px (og-image.png) a la raíz del proyecto -->
+<meta property="og:image" content="https://TU-DOMINIO.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Diablo IV weapon damage calculator">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Diablo IV Weapon Damage Calculator">
+<meta name="twitter:description" content="Compare two weapons: main stat, additive and [x] multipliers, per hit or per second.">
+<meta name="twitter:image" content="https://TU-DOMINIO.com/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Diablo IV Weapon Damage Calculator",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "inLanguage": ["en", "es"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "description": "Compare two Diablo IV weapons using main stat, additive and multiplicative damage buckets."
+}
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 28 7v9c0 7-5 12-12 14C9 28 4 23 4 16V7z' fill='%23140e0c' stroke='%23d3ad6f' stroke-width='2'/%3E%3Cpath d='M16 8l2.4 6.6L25 17l-6.6 2.4L16 26l-2.4-6.6L7 17l6.6-2.4z' fill='%23d3ad6f'/%3E%3C/svg%3E">
+
+<!-- Fuentes: IM Fell English SC (título) · Cormorant Garamond (subtítulos y cifras) · EB Garamond (texto y botones) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#0e0a09; --bg-2:#15100e; --surface:#1a1513; --raised:#231c19; --input:#0f0b0a;
+  --line:#41352d; --line-soft:#2d2420;
+  --ink:#efe6d2; --muted:#b3a38c; --dim:#8c7c69;
+  --gold:#d3ad6f; --gold-hi:#f3cf8b; --gold-lo:#8d6a34;
+  --blood:#a63e36; --blood-hi:#e0654f; --ember:#e8833a;
+  --ok:#8fb36a; --bad:#e0654f;
+  --f-title:'IM Fell English SC','Palatino Linotype',Georgia,serif;
+  --f-sub:'Cormorant Garamond','Palatino Linotype',Georgia,serif;
+  --f-body:'EB Garamond','Palatino Linotype',Georgia,'Times New Roman',serif;
+  --r:4px;
+}
+*{box-sizing:border-box}
+html{min-width:280px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;min-height:100vh;color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  font-variant-numeric:lining-nums;
+  background:
+    radial-gradient(ellipse 70% 38% at 50% 0%,rgba(150,48,32,.26),transparent 72%),
+    radial-gradient(ellipse 45% 30% at 0% 55%,rgba(120,50,28,.10),transparent 75%),
+    radial-gradient(ellipse 45% 30% at 100% 80%,rgba(120,50,28,.10),transparent 75%),
+    linear-gradient(180deg,#150e0c 0%,var(--bg) 40%,#090605 100%);
+}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.embers{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.embers span{position:absolute;bottom:-12px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;opacity:0;
+  background:radial-gradient(circle,#ffe0a8 0,#e8833a 45%,transparent 72%);
+  animation:rise var(--d) linear var(--l) infinite}
+@keyframes rise{0%{transform:translate3d(0,0,0);opacity:0}8%{opacity:.85}70%{opacity:.5}100%{transform:translate3d(var(--dx),-108vh,0);opacity:0}}
+
+.shell{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left))}
+
+/* ============ TOPBAR ============ */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:78px;border-bottom:1px solid rgba(211,173,111,.18)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.crest{width:36px;height:42px;flex:none;color:var(--gold);filter:drop-shadow(0 0 10px rgba(211,173,111,.18))}
+.crest svg{display:block;width:100%;height:100%}
+.brand-title{display:block;font-family:var(--f-title);font-size:21px;letter-spacing:.14em;line-height:1.1;white-space:nowrap}
+.brand-sub{display:block;margin-top:3px;font-family:var(--f-sub);font-size:13px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+.lang{display:inline-flex;gap:3px;padding:3px;background:var(--input);border:1px solid var(--line);border-radius:3px;flex:none}
+.lang button{border:0;background:transparent;min-width:42px;height:34px;padding:0 10px;border-radius:2px;color:var(--muted);font-weight:600;font-size:15px;letter-spacing:.1em;transition:background .2s,color .2s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:linear-gradient(180deg,#e2bd7b,#b98a49);color:#1d130d;box-shadow:0 1px 8px rgba(211,173,111,.2)}
+
+/* ============ HERO ============ */
+.hero{text-align:center;padding:30px 0 28px}
+.emblem{display:block;width:min(290px,76vw);height:auto;margin:0 auto 2px;overflow:visible}
+.emblem .glow{animation:flick 3.4s ease-in-out infinite alternate}
+.emblem .ring{transform-box:fill-box;transform-origin:center;animation:spin 90s linear infinite}
+.emblem .float{animation:bob 6s ease-in-out infinite}
+.emblem .float.b{animation-delay:-3s}
+.emblem .seal{transform-box:fill-box;transform-origin:center;animation:pulse 2.6s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@keyframes flick{from{opacity:.72}to{opacity:1}}
+@keyframes pulse{50%{transform:scale(1.18);filter:brightness(1.35)}}
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 12px;font-family:var(--f-sub);font-weight:700;font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.eyebrow::before,.eyebrow::after{content:"";width:38px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow::after{transform:scaleX(-1)}
+h1{margin:0;font-family:var(--f-title);font-weight:400;font-size:clamp(34px,6.2vw,66px);line-height:1.08;letter-spacing:.01em;text-wrap:balance;text-shadow:0 3px 28px rgba(0,0,0,.5)}
+h1 em{font-style:normal;color:var(--gold-hi);text-shadow:0 0 28px rgba(232,131,58,.35),0 3px 22px rgba(0,0,0,.5)}
+.lede{max-width:580px;margin:16px auto 0;color:var(--muted);font-size:19px;font-style:italic}
+
+/* ============ TOOL ============ */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 14px}
+.caption{display:flex;align-items:center;gap:10px;margin:0;font-family:var(--f-sub);font-weight:700;font-size:17px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.caption::before{content:"";width:9px;height:9px;transform:rotate(45deg);background:var(--blood-hi);box-shadow:0 0 10px var(--blood)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #4b3c2f;background:rgba(37,29,24,.6);color:#d2c2a9;border-radius:3px;font-weight:600;font-size:15.5px;letter-spacing:.03em;transition:background .2s,border-color .2s,color .2s,transform .15s}
+.btn:hover{background:#33271f;border-color:var(--gold);color:var(--ink)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+.controls{display:flex;gap:16px 24px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:0 0 16px;padding:14px 16px;border:1px solid var(--line-soft);border-radius:var(--r);background:rgba(26,21,19,.65)}
+.ctl-label{display:block;margin-bottom:6px;font-family:var(--f-sub);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;padding:3px;gap:3px;background:var(--input);border:1px solid var(--line);border-radius:3px}
+.seg button{border:0;background:transparent;min-height:38px;padding:0 16px;display:flex;align-items:center;justify-content:center;line-height:1.1;border-radius:2px;color:var(--muted);font-weight:600;font-size:15.5px;letter-spacing:.04em;transition:background .2s,color .2s}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:linear-gradient(180deg,#e2bd7b,#b98a49);color:#1d130d}
+.ctl-stat{min-width:210px;flex:0 1 300px}
+.ctl-hint{display:block;margin-top:5px;color:var(--dim);font-size:14.5px;line-height:1.3}
+
+.grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.panel{position:relative;min-width:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  background:linear-gradient(145deg,rgba(46,36,31,.85),rgba(21,17,16,.99) 46%);
+  box-shadow:0 14px 36px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,230,177,.06);transition:border-color .3s,box-shadow .3s}
+.panel::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.55}
+.panel[data-w="b"]::before{background:linear-gradient(90deg,transparent,#c2644f,transparent)}
+.panel::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(232,150,80,.10),transparent 70%)}
+.panel:hover::after{opacity:1}
+.panel.win{border-color:#b48c55;box-shadow:0 0 0 1px rgba(211,173,111,.16),0 14px 46px rgba(120,50,20,.28)}
+.panel.win::before{opacity:1}
+.panel.win .ribbon{opacity:1;transform:none}
+.ribbon{position:absolute;top:12px;right:14px;z-index:2;padding:3px 10px;border:1px solid rgba(243,207,139,.5);border-radius:2px;background:rgba(141,106,52,.28);color:var(--gold-hi);font-family:var(--f-sub);font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s;pointer-events:none}
+.head{display:flex;align-items:center;gap:14px;padding:20px 22px 16px;border-bottom:1px solid rgba(211,173,111,.13)}
+.mark{position:relative;flex:none;width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(211,173,111,.3);background:rgba(11,8,7,.35);color:var(--gold);border-radius:50%;transition:transform .35s cubic-bezier(.3,1.4,.5,1),border-color .2s,box-shadow .2s}
+.mark:hover{border-color:var(--gold-hi);box-shadow:0 0 18px rgba(211,173,111,.22);transform:rotate(-8deg) scale(1.06)}
+.mark .ic{width:30px;height:30px;stroke-width:1.4}
+.panel[data-w="b"] .mark{color:#d38d7b;border-color:rgba(211,141,123,.34)}
+.head-text{min-width:0;flex:1}
+.slot{margin:0 0 2px;font-family:var(--f-sub);font-weight:700;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);padding-right:84px}
+.name{display:block;width:100%;min-width:0;padding:2px 0 3px;border:0;border-bottom:1px dashed transparent;background:transparent;font-family:var(--f-sub);font-weight:700;font-size:30px;line-height:1.1;color:var(--ink);text-overflow:ellipsis;transition:border-color .2s}
+.panel[data-w="b"] .name{color:#efd0c4}
+.name:hover,.name:focus{border-bottom-color:var(--gold-lo);outline:0}
+.name::placeholder{color:inherit;opacity:1}
+.name:focus-visible{border-bottom-color:var(--gold-hi);outline:0}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 14px;padding:18px 22px 6px}
+.field{min-width:0}
+.f-aps{display:none}
+.grid[data-mode="hit"] .field:nth-child(3){grid-column:1/-1}
+.grid[data-mode="dps"] .f-aps{display:block;animation:reveal .35s ease}
+@keyframes reveal{from{opacity:0;transform:translateY(-6px)}}
+.flabel{display:block;font-weight:600;font-size:16px;line-height:1.2;color:#eadfca}
+.hint{display:block;min-height:36px;margin:2px 0 7px;color:var(--dim);font-size:14.5px;line-height:1.25}
+.wrap{display:flex;align-items:center;background:var(--input);border:1px solid #51423a;border-radius:3px;transition:border-color .2s,box-shadow .2s}
+.wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(211,173,111,.13)}
+.wrap.bad{border-color:var(--bad);box-shadow:0 0 0 3px rgba(224,101,79,.12)}
+.num{min-width:0;width:100%;height:48px;padding:0 12px;border:0;outline:0;background:transparent;font-family:var(--f-sub);font-size:23px;font-weight:700;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.num::placeholder{color:#5e5145;font-weight:600}
+.suffix{padding:0 12px 0 2px;font-family:var(--f-sub);font-weight:700;font-size:21px;color:var(--gold);pointer-events:none}
+.err{display:block;min-height:0;margin-top:4px;color:var(--bad);font-size:14.5px;line-height:1.25}
+.err:empty{display:none}
+
+.mults{padding:10px 22px 20px}
+.mults-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.mults .hint{min-height:0;margin:0}
+.mrow{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.mrow .wrap{flex:1}
+.mrow .xp{flex:none;display:grid;place-items:center;width:34px;height:48px;font-family:var(--f-sub);font-weight:700;font-size:20px;color:var(--gold-lo)}
+.rm{flex:none;width:44px;height:48px;display:grid;place-items:center;border:1px solid #4b3c2f;border-radius:3px;background:transparent;color:var(--dim);transition:color .2s,border-color .2s,background .2s}
+.rm:hover{color:var(--bad);border-color:var(--bad);background:rgba(224,101,79,.08)}
+.rm .ic{width:18px;height:18px}
+.rm[disabled]{visibility:hidden}
+.mrow-col{flex:1;min-width:0}
+.add{margin-top:2px;min-height:38px;font-size:15px}
+
+.total{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:16px 22px 18px;border-top:1px solid var(--line-soft);background:linear-gradient(100deg,rgba(90,50,30,.22),transparent)}
+.t-label{display:block;font-family:var(--f-sub);font-weight:700;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.t-num{display:block;margin-top:2px;font-family:var(--f-sub);font-weight:700;font-size:clamp(32px,4vw,44px);line-height:1;color:var(--gold-hi);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap;text-shadow:0 0 22px rgba(232,131,58,.22)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:100%}
+.chip{display:inline-flex;gap:6px;align-items:baseline;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:rgba(15,11,10,.55);font-size:14px;color:var(--muted);white-space:nowrap}
+.chip b{font-family:var(--f-sub);font-size:17px;color:var(--ink)}
+.vs{position:absolute;z-index:3;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);display:grid;place-items:center;border-radius:50%;background:#110c0b;border:1px solid #6b4f39;color:var(--gold);font-family:var(--f-title);font-size:15px;box-shadow:0 0 0 5px rgba(14,10,9,.9),0 0 22px rgba(166,62,54,.35)}
+.vs.hit{animation:vsHit .5s ease}
+@keyframes vsHit{40%{transform:translate(-50%,-50%) scale(1.25) rotate(8deg);box-shadow:0 0 0 5px rgba(14,10,9,.9),0 0 34px rgba(232,131,58,.7)}}
+
+/* ============ VERDICT ============ */
+.verdict{position:relative;overflow:hidden;margin-top:24px;padding:30px 22px 26px;text-align:center;border:1px solid #66503b;border-radius:var(--r);background:linear-gradient(120deg,rgba(43,29,23,.95),rgba(22,18,16,.98) 66%);box-shadow:0 12px 38px rgba(0,0,0,.22)}
+.verdict::before,.verdict::after{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.verdict::after{top:auto;bottom:0;opacity:.35}
+.verdict.pop{animation:pop .55s ease}
+@keyframes pop{35%{box-shadow:0 0 0 1px rgba(243,207,139,.35),0 0 60px rgba(232,131,58,.28)}}
+.v-eyebrow{margin:0 0 10px;font-family:var(--f-sub);font-weight:700;font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border:1px solid rgba(211,173,111,.4);border-radius:2px;background:rgba(141,106,52,.16);color:var(--gold-hi);font-family:var(--f-sub);font-weight:700;font-size:15px;letter-spacing:.2em;text-transform:uppercase}
+.verdict[data-r="tie"] .badge,.verdict[data-r="pending"] .badge{color:var(--muted);background:rgba(120,110,100,.1);border-color:var(--line)}
+.v-title{margin:12px 0 4px;font-family:var(--f-sub);font-weight:700;font-size:clamp(26px,4.6vw,44px);line-height:1.15;text-wrap:balance;overflow-wrap:anywhere}
+.v-title strong{color:var(--gold-hi);font-weight:inherit}
+.v-detail{margin:0 auto;max-width:620px;color:var(--muted);font-size:17px}
+.cmp{display:grid;gap:12px;max-width:720px;margin:24px auto 0}
+.crow{display:grid;grid-template-columns:minmax(70px,130px) minmax(0,1fr) minmax(86px,130px);gap:14px;align-items:center}
+.cname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;font-family:var(--f-sub);font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+.cval{text-align:right;font-family:var(--f-sub);font-weight:700;font-size:20px;font-variant-numeric:lining-nums tabular-nums}
+.track{height:12px;border:1px solid #473629;border-radius:2px;background:#0d0908;overflow:hidden}
+.fill{height:100%;width:0;transition:width .5s cubic-bezier(.2,.8,.2,1);background:linear-gradient(90deg,#845b33,#f0c783)}
+.crow[data-w="b"] .fill{background:linear-gradient(90deg,#6a302c,#e0705a)}
+.note{max-width:720px;margin:18px auto 0;text-align:center;color:var(--dim);font-size:15px;line-height:1.45}
+.note strong{color:var(--muted);font-weight:600}
+.note a{color:var(--gold);text-decoration-color:rgba(211,173,111,.4);text-underline-offset:3px}
+.note a:hover{text-decoration-color:var(--gold)}
+
+/* ============ KO-FI ============ */
+.support{display:flex;align-items:center;justify-content:space-between;gap:22px;margin:30px 0 26px;padding:24px 26px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(100deg,rgba(40,31,26,.9),rgba(24,20,18,.92));position:relative;overflow:hidden}
+.support::before{content:"";position:absolute;left:-40px;bottom:-60px;width:220px;height:140px;background:radial-gradient(closest-side,rgba(232,131,58,.22),transparent);pointer-events:none}
+.s-copy{position:relative;display:flex;align-items:center;gap:16px}
+.cup{flex:none;width:50px;height:50px;display:grid;place-items:center;border:1px solid rgba(211,173,111,.26);border-radius:50%;background:rgba(211,173,111,.08);color:var(--gold)}
+.cup svg{width:28px;height:28px;overflow:visible}
+.steam{animation:steam 2.8s ease-in-out infinite;transform-origin:center bottom}
+.steam.b{animation-delay:-1.4s}
+@keyframes steam{0%{opacity:0;transform:translateY(2px)}40%{opacity:.9}100%{opacity:0;transform:translateY(-4px)}}
+.s-copy h2{margin:0 0 2px;font-family:var(--f-sub);font-weight:700;font-size:25px;line-height:1.15}
+.s-copy p{margin:0;color:var(--muted);font-size:16.5px}
+.coffee{position:relative;overflow:hidden;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border-radius:3px;background:linear-gradient(180deg,#e6c383,#b98a49);color:#1d130d;font-weight:600;font-size:17px;letter-spacing:.04em;text-decoration:none;box-shadow:0 2px 0 #6f4a27,0 10px 26px rgba(0,0,0,.28);transition:transform .2s,filter .2s}
+.coffee::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transition:left .6s}
+.coffee:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.coffee:hover::after{left:130%}
+.coffee .ic{width:20px;height:20px;fill:currentColor;stroke:none}
+.foot{display:flex;justify-content:space-between;gap:6px 18px;flex-wrap:wrap;padding:0 0 28px;color:#7e705f;font-size:14px;letter-spacing:.04em}
+.foot span:last-child{color:#9a8061;font-style:italic}
+
+/* ============ RESPONSIVE ============ */
+@media (min-width:900px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .grid[data-mode="hit"] .fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid[data-mode="hit"] .field:nth-child(3){grid-column:auto}
+  .vs{top:84px;transform:translate(-50%,0)}
+  .vs.hit{animation-name:vsHit2}
+  @keyframes vsHit2{40%{transform:translate(-50%,0) scale(1.25) rotate(8deg);box-shadow:0 0 0 5px rgba(14,10,9,.9),0 0 34px rgba(232,131,58,.7)}}
+}
+@media (max-width:899px){
+  .vs{top:auto;position:relative;left:auto;margin:-8px auto -8px;transform:none;order:0}
+  .vs.hit{animation-name:vsHit3}
+  @keyframes vsHit3{40%{transform:scale(1.25) rotate(8deg)}}
+  .grid{gap:8px}
+  .grid .panel[data-w="a"]{order:1}.grid .vs{order:2}.grid .panel[data-w="b"]{order:3}
+}
+@media (max-width:560px){
+  body{font-size:16.5px}
+  .shell{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+  .topbar{min-height:68px}
+  .brand-title{font-size:17px;letter-spacing:.1em}
+  .brand-sub{font-size:11.5px;letter-spacing:.26em}
+  .crest{width:30px;height:35px}
+  .lang button{min-width:38px}
+  .hero{padding:22px 0 22px}
+  .lede{font-size:17.5px}
+  .eyebrow{font-size:12.5px;letter-spacing:.22em;gap:10px}
+  .eyebrow::before,.eyebrow::after{width:22px}
+  .actions{width:100%}
+  .actions .btn{flex:1;justify-content:center;padding:0 8px}
+  .controls{padding:12px}
+  .seg{display:flex;width:100%}.seg button{flex:1;padding:4px 6px;font-size:15px}
+  .caption{font-size:15px;letter-spacing:.13em}
+  .ctl-mode,.ctl-stat{flex:1 1 100%;max-width:none}
+  .head{padding:16px 16px 14px;gap:12px}
+  .mark{width:46px;height:46px}
+  .name{font-size:26px}
+  .slot{padding-right:88px;font-size:12px;letter-spacing:.18em}
+  .ribbon{top:9px;right:10px;font-size:12px;padding:2px 8px}
+  .fields{padding:14px 16px 4px;gap:14px 10px}
+  .flabel{font-size:15px}.hint{font-size:13.5px;min-height:34px}
+  .num{font-size:21px;height:46px;padding:0 10px}
+  .mults{padding:8px 16px 16px}
+  .total{padding:14px 16px 16px}
+  .chips{justify-content:flex-start}
+  .verdict{padding:26px 14px 22px}
+  .crow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}
+  .crow .track{grid-column:1/-1;grid-row:2}
+  .cname{font-size:14px}.cval{font-size:18px}
+  .support{flex-direction:column;align-items:stretch;gap:18px;padding:20px 18px}
+  .coffee{width:100%}
+  .foot{flex-direction:column}
+}
+@media (max-width:340px){
+  .fields{grid-template-columns:1fr}
+  .hint{min-height:0}
+  .brand-sub{display:none}
+  .t-num{font-size:30px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-sword" viewBox="0 0 24 24"><path d="M12 1.6l2.5 3.2v10.6h-5V4.8z" fill="currentColor" fill-opacity=".22"/><path d="M6.4 15.4h11.2M12 15.4v4.4"/><circle cx="12" cy="21.3" r="1.1"/></symbol>
+    <symbol id="ic-axe" viewBox="0 0 24 24"><path d="M5.2 21.8 15.4 2.6"/><path d="M13.4 4.4c3.6-2.6 8-.6 7.8 3.6-.2 3.8-3.8 5.8-7 4.6z" fill="currentColor" fill-opacity=".22"/><path d="M9.2 15.8l3 1.6"/></symbol>
+    <symbol id="ic-mace" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.3"/><path d="M12 11.8v9.7M9.8 21.5h4.4M12 1.4v2M5.4 7.5h2M16.6 7.5h2M7.3 2.9l1.3 1.3M16.7 2.9l-1.3 1.3"/></symbol>
+    <symbol id="ic-staff" viewBox="0 0 24 24"><path d="M12 1.8l3.2 3.8L12 9.4 8.8 5.6z" fill="currentColor" fill-opacity=".22"/><path d="M12 9.4V22M9.6 22h4.8M9.4 12.4h5.2"/></symbol>
+    <symbol id="ic-bow" viewBox="0 0 24 24"><path d="M6 3c10 3 10 15 0 18"/><path d="M6 3v18M6 12h14M17 8.8 20.2 12 17 15.2"/></symbol>
+    <symbol id="ic-dagger" viewBox="0 0 24 24"><path d="M12 2 14.6 11.4H9.4z"/><path d="M7.6 11.4h8.8M12 11.4v6.2M10.2 17.6h3.6M12 17.6v3.6"/></symbol>
+    <symbol id="ic-swap" viewBox="0 0 24 24"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></symbol>
+    <symbol id="ic-reset" viewBox="0 0 24 24"><path d="M4.2 12a7.8 7.8 0 1 0 2.4-5.6M4.2 3.8v4.6h4.6"/></symbol>
+    <symbol id="ic-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 5.3l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></symbol>
+    <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3H17a2 2 0 0 1 2 2v1h1a4 4 0 1 1 0 8h-1v1a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V5.5Zm17 3V12h1a1.75 1.75 0 0 0 0-3.5h-1Zm-8 7 4.4-4.05a2.55 2.55 0 0 0-3.6-3.6l-.8.8-.8-.8a2.55 2.55 0 0 0-3.6 3.6L11 15.5Z"/></symbol>
+  </defs>
+</svg>
+
+<div class="embers" id="embers" aria-hidden="true"></div>
+
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="crest" aria-hidden="true">
+        <svg viewBox="0 0 50 60" fill="none"><path d="M25 2 45 12v23c0 9-9 18-20 23C14 53 5 44 5 35V12z" stroke="currentColor" stroke-width="1.6"/><path d="M25 8 39 15v19c0 6-6 13-14 17-8-4-14-11-14-17V15z" stroke="currentColor" stroke-opacity=".45"/><path d="M25 14l3 9 8 3-8 3-3 12-3-12-8-3 8-3z" fill="currentColor"/></svg>
+      </div>
+      <div><span class="brand-title">Diablo IV</span><span class="brand-sub" data-i18n="brandSub">The Armory</span></div>
+    </div>
+    <div class="lang" role="group" aria-label="Language / Idioma">
+      <button type="button" id="lang-en" lang="en" aria-pressed="true">EN</button>
+      <button type="button" id="lang-es" lang="es" aria-pressed="false">ES</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <svg class="emblem" viewBox="0 0 240 180" role="img" aria-label="Crossed sword and axe over a glowing rune circle">
+        <defs>
+          <radialGradient id="eg" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e0654f" stop-opacity=".6"/><stop offset=".55" stop-color="#a63e36" stop-opacity=".24"/><stop offset="1" stop-color="#a63e36" stop-opacity="0"/></radialGradient>
+          <linearGradient id="blade" x1="0" x2="1"><stop offset="0" stop-color="#8f8676"/><stop offset=".5" stop-color="#f4ecd9"/><stop offset="1" stop-color="#776e60"/></linearGradient>
+          <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3cf8b"/><stop offset="1" stop-color="#8d6a34"/></linearGradient>
+        </defs>
+        <circle class="glow" cx="120" cy="90" r="88" fill="url(#eg)"/>
+        <g class="ring" fill="none" stroke="#d3ad6f">
+          <circle cx="120" cy="90" r="76" stroke-opacity=".6" stroke-width="1"/>
+          <circle cx="120" cy="90" r="69" stroke-opacity=".5" stroke-width="3.2" stroke-dasharray="1.2 9.48"/>
+          <circle cx="120" cy="90" r="60" stroke-opacity=".32" stroke-width="1.2" stroke-dasharray="9 6.708"/>
+          <path d="M120 10l4 4-4 4-4-4zM120 162l4 4-4 4-4-4zM40 86l4 4-4 4-4-4zM200 86l4 4-4 4-4-4z" fill="#d3ad6f" stroke="none" opacity=".85"/>
+        </g>
+        <g class="float b"><g transform="rotate(40 120 90)">
+          <rect x="118" y="20" width="4" height="132" rx="2" fill="#4a352a" stroke="url(#gold)" stroke-width="1"/>
+          <path d="M122 28C150 19 167 39 161 63 158 75 141 81 122 73z" fill="url(#blade)" stroke="url(#gold)" stroke-width="1.3"/>
+          <path d="M126 36C141 34 151 42 151 56" fill="none" stroke="#6d6354" stroke-width="1" opacity=".7"/>
+          <path d="M118 33l-9 4 9 5z" fill="url(#gold)"/>
+          <rect x="116.5" y="104" width="7" height="3" fill="url(#gold)"/><rect x="116.5" y="110" width="7" height="3" fill="url(#gold)"/>
+          <circle cx="120" cy="155" r="4" fill="url(#gold)"/>
+        </g></g>
+        <g class="float"><g transform="rotate(-40 120 90)">
+          <path d="M120 10l7.5 15v79h-15V25z" fill="url(#blade)" stroke="url(#gold)" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M120 24v76" stroke="#5f564a" stroke-width="1.4" opacity=".65"/>
+          <path d="M98 104h44l-4 8h-36z" fill="url(#gold)" stroke="#6f4a27" stroke-width=".8"/>
+          <rect x="116.5" y="112" width="7" height="27" rx="1.5" fill="#3a2a22" stroke="#8d6a34" stroke-width=".8"/>
+          <path d="M116.5 118h7M116.5 124h7M116.5 130h7" stroke="#8d6a34" stroke-width=".8"/>
+          <circle cx="120" cy="144" r="5.4" fill="url(#gold)" stroke="#6f4a27" stroke-width=".8"/>
+        </g></g>
+        <g class="seal"><path d="M120 76l11 14-11 14-11-14z" fill="#a63e36" stroke="#f3cf8b" stroke-width="1.2"/><circle cx="120" cy="90" r="2.6" fill="#ffd9a0"/></g>
+      </svg>
+      <p class="eyebrow" data-i18n="eyebrow">The Blacksmith's Ledger</p>
+      <h1 id="title"><span data-i18n="titleA">Which weapon</span><br><em data-i18n="titleB">strikes harder?</em></h1>
+      <p class="lede" data-i18n="lede">Compare two weapons with the real damage buckets: main stat, additive and multiplicative bonuses. One clear answer.</p>
+    </section>
+
+    <section id="tool" aria-labelledby="cap">
+      <div class="bar">
+        <h2 class="caption" id="cap" data-i18n="caption">Equipment comparison</h2>
+        <div class="actions">
+          <button type="button" class="btn" id="swap-btn"><svg class="ic" aria-hidden="true"><use href="#ic-swap"/></svg><span data-i18n="swap">Swap</span></button>
+          <button type="button" class="btn" id="copy-btn"><svg class="ic" aria-hidden="true"><use href="#ic-link"/></svg><span id="copy-label" data-i18n="copy">Copy link</span></button>
+          <button type="button" class="btn" id="reset-btn"><svg class="ic" aria-hidden="true"><use href="#ic-reset"/></svg><span data-i18n="reset">Reset</span></button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="ctl-mode">
+          <span class="ctl-label" id="mode-label" data-i18n="modeLabel">Compare by</span>
+          <div class="seg" role="group" aria-labelledby="mode-label">
+            <button type="button" data-mode="hit" aria-pressed="true" data-i18n="modeHit">Damage per hit</button>
+            <button type="button" data-mode="dps" aria-pressed="false" data-i18n="modeDps">Damage per second</button>
+          </div>
+        </div>
+        <div class="ctl-stat">
+          <label class="ctl-label" for="cs" data-i18n="csLabel">Your main stat (optional)</label>
+          <span class="wrap" id="cs-wrap"><input class="num" id="cs" type="text" inputmode="decimal" maxlength="14" autocomplete="off" placeholder="0" aria-describedby="cs-hint cs-err"></span>
+          <span class="ctl-hint" id="cs-hint" data-i18n="csHint">Total main stat from everything except these two weapons.</span>
+          <span class="err" id="cs-err"></span>
+        </div>
+      </div>
+
+      <div class="grid" id="grid" data-mode="hit"><div class="vs" id="vs" aria-hidden="true">VS</div></div>
+      <noscript><p class="note">This calculator needs JavaScript. / Esta calculadora necesita JavaScript.</p></noscript>
+    </section>
+
+    <section class="verdict" id="verdict" data-r="pending" aria-labelledby="v-title">
+      <p class="v-eyebrow" data-i18n="vEyebrow">The final verdict</p>
+      <div class="badge" id="badge" data-i18n="vWait">Awaiting numbers</div>
+      <h2 class="v-title" id="v-title" aria-live="polite" aria-atomic="true">—</h2>
+      <p class="v-detail" id="v-detail"></p>
+      <div class="cmp" role="group" aria-label="Damage comparison">
+        <div class="crow" data-w="a"><span class="cname" id="cn-a"></span><div class="track" role="img" id="tr-a"><div class="fill" id="bar-a"></div></div><span class="cval" id="cv-a">—</span></div>
+        <div class="crow" data-w="b"><span class="cname" id="cn-b"></span><div class="track" role="img" id="tr-b"><div class="fill" id="bar-b"></div></div><span class="cval" id="cv-b">—</span></div>
+      </div>
+    </section>
+
+    <p class="note" id="formula"></p>
+
+    <aside class="support" aria-labelledby="s-title">
+      <div class="s-copy">
+        <div class="cup" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h2a3 3 0 0 1 0 6h-2M3 22h17"/><path class="steam" d="M8.5 3.5c-1.6 1.3 1.6 2.2 0 3.5"/><path class="steam b" d="M13 3.5c-1.6 1.3 1.6 2.2 0 3.5"/></svg>
+        </div>
+        <div><h2 id="s-title" data-i18n="sTitle">Keep the forge burning</h2><p data-i18n="sText">Find this tool useful? Help me keep building free tools for the community.</p></div>
+      </div>
+      <a class="coffee" id="coffee" href="https://ko-fi.com/titixmixgames" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true"><use href="#ic-heart"/></svg><span data-i18n="coffee">Buy me a coffee</span></a>
+    </aside>
+  </main>
+
+  <footer class="foot"><span data-i18n="fLeft">Fan-made tool · Not affiliated with Blizzard Entertainment</span><span data-i18n="fRight">Crafted for the wanderers of Sanctuary</span></footer>
+</div>
+
+<script>
+(() => {
+'use strict';
+const NS = 'http://www.w3.org/2000/svg';
+const I18N = {
+  en: {
+    brandSub:'The Armory', eyebrow:"The Blacksmith's Ledger", titleA:'Which weapon', titleB:'strikes harder?',
+    lede:'Compare two weapons with the real damage buckets: main stat, additive and multiplicative bonuses. One clear answer.',
+    caption:'Equipment comparison', swap:'Swap', copy:'Copy link', copied:'Link copied', copyFail:'Copy failed', reset:'Reset',
+    modeLabel:'Compare by', modeHit:'Damage per hit', modeDps:'Damage per second',
+    csLabel:'Your main stat (optional)', csHint:'Total main stat from everything except these two weapons.',
+    slotA:'Slot 01 · Equipped', slotB:'Slot 02 · New loot', weaponA:'Weapon A', weaponB:'Weapon B',
+    nameAria:(s)=>`Name of weapon ${s}`, typeAria:(n)=>`Weapon type: ${n}. Click to change.`,
+    types:['Sword','Axe','Mace','Staff','Bow','Dagger'],
+    base:'Weapon damage', baseHint:'Average of the min–max range',
+    stat:'Weapon main stat', statHint:'Main stat this weapon grants',
+    add:'Additive damage', addHint:'Sum of every [+] % bonus',
+    aps:'Attacks per second', apsHint:'Weapon speed, e.g. 1.10',
+    multTitle:'[x] multipliers', multHint:'Each [x] bonus multiplies on its own',
+    multAria:(s,i)=>`Weapon ${s}, [x] multiplier ${i}`, rmAria:(i)=>`Remove multiplier ${i}`, addMult:'Add [x] bonus',
+    effHit:'Damage per hit', effDps:'Damage per second',
+    cMain:'Main stat', cAdd:'Additive', cX:'[x]', cSpd:'Speed',
+    winShort:'Stronger',
+    vEyebrow:'The final verdict', vWait:'Awaiting numbers', vWin:'Stronger weapon', vTie:'Equal damage',
+    pendTitle:'Fill in the numbers', pendDetail:'Weapon damage is required for both weapons, and every value must be a valid number.',
+    tieTitle:'A perfect tie.', tieDetail:'Both weapons deal the same damage.',
+    winT:(n,p)=>[`${n} deals `,`${p}% more damage.`],
+    zeroT:(n)=>[`Only ${n} deals damage.`,''],
+    winD:(l,p,d)=>`${l} deals ${p}% less, a gap of ${d}.`,
+    zeroD:'The other weapon deals zero damage, so no finite percentage exists.',
+    errReq:'Required', errRange:(a,b)=>`Enter a number from ${a} to ${b}`,
+    barAria:(n,v)=>`${n}: ${v}`,
+    formula:'<strong>Formula:</strong> Weapon damage × (1 + main stat ÷ 1000) × (1 + additive % ÷ 100) × each (1 + [x] % ÷ 100). In per-second mode the result is multiplied by attacks per second. Simplified model: crit, Vulnerable, Overpower, enemy defenses and attack-speed breakpoints are not included. Based on <a href="https://maxroll.gg/d4/resources/in-depth-damage-guide" target="_blank" rel="noopener noreferrer">Maxroll\'s damage guide</a> and <a href="https://diablofilter.com/guide/damage-explained-how-damage-really-works-and-how-to-compare-gear" target="_blank" rel="noopener noreferrer">DiabloFilter</a>.',
+    sTitle:'Keep the forge burning', sText:'Find this tool useful? Help me keep building free tools for the community.',
+    coffee:'Buy me a coffee', coffeeAria:'Buy me a coffee on Ko-fi (opens in a new tab)',
+    fLeft:'Fan-made tool · Not affiliated with Blizzard Entertainment', fRight:'Crafted for the wanderers of Sanctuary',
+    docTitle:'Diablo IV Weapon Damage Calculator – Compare Two Weapons'
+  },
+  es: {
+    brandSub:'La Armería', eyebrow:'El registro del herrero', titleA:'¿Qué arma', titleB:'golpea más fuerte?',
+    lede:'Compara dos armas con las categorías reales de daño: atributo principal, bonus aditivos y multiplicativos. Una respuesta clara.',
+    caption:'Comparación de equipo', swap:'Intercambiar', copy:'Copiar enlace', copied:'Enlace copiado', copyFail:'No se pudo copiar', reset:'Restablecer',
+    modeLabel:'Comparar por', modeHit:'Daño por golpe', modeDps:'Daño por segundo',
+    csLabel:'Tu atributo principal (opcional)', csHint:'Atributo principal total sin contar estas dos armas.',
+    slotA:'Hueco 01 · Equipada', slotB:'Hueco 02 · Botín nuevo', weaponA:'Arma A', weaponB:'Arma B',
+    nameAria:(s)=>`Nombre del arma ${s}`, typeAria:(n)=>`Tipo de arma: ${n}. Pulsa para cambiar.`,
+    types:['Espada','Hacha','Maza','Bastón','Arco','Daga'],
+    base:'Daño del arma', baseHint:'Media del rango mín–máx',
+    stat:'Atributo del arma', statHint:'Atributo principal que aporta el arma',
+    add:'Daño aditivo', addHint:'Suma de todos los bonus [+] %',
+    aps:'Ataques por segundo', apsHint:'Velocidad del arma, ej. 1,10',
+    multTitle:'Multiplicadores [x]', multHint:'Cada bonus [x] multiplica por separado',
+    multAria:(s,i)=>`Arma ${s}, multiplicador [x] ${i}`, rmAria:(i)=>`Quitar multiplicador ${i}`, addMult:'Añadir bonus [x]',
+    effHit:'Daño por golpe', effDps:'Daño por segundo',
+    cMain:'Atributo', cAdd:'Aditivo', cX:'[x]', cSpd:'Velocidad',
+    winShort:'Más fuerte',
+    vEyebrow:'Veredicto final', vWait:'Faltan valores', vWin:'Arma más potente', vTie:'Daño igualado',
+    pendTitle:'Completa los valores', pendDetail:'El daño del arma es obligatorio en ambas, y cada valor debe ser un número válido.',
+    tieTitle:'Empate perfecto.', tieDetail:'Ambas armas infligen el mismo daño.',
+    winT:(n,p)=>[`${n} inflige `,`un ${p}% más de daño.`],
+    zeroT:(n)=>[`Solo ${n} inflige daño.`,''],
+    winD:(l,p,d)=>`${l} inflige un ${p}% menos, una diferencia de ${d}.`,
+    zeroD:'La otra arma inflige cero daño, por lo que no existe un porcentaje finito.',
+    errReq:'Obligatorio', errRange:(a,b)=>`Introduce un número de ${a} a ${b}`,
+    barAria:(n,v)=>`${n}: ${v}`,
+    formula:'<strong>Fórmula:</strong> Daño del arma × (1 + atributo ÷ 1000) × (1 + aditivo % ÷ 100) × cada (1 + [x] % ÷ 100). En modo por segundo el resultado se multiplica por los ataques por segundo. Modelo simplificado: no incluye crítico, Vulnerable, Sobrepoder, defensas del enemigo ni umbrales de velocidad de ataque. Basado en la <a href="https://maxroll.gg/d4/resources/in-depth-damage-guide" target="_blank" rel="noopener noreferrer">guía de daño de Maxroll</a> y <a href="https://diablofilter.com/guide/damage-explained-how-damage-really-works-and-how-to-compare-gear" target="_blank" rel="noopener noreferrer">DiabloFilter</a>.',
+    sTitle:'Mantén viva la forja', sText:'¿Te resulta útil? Ayúdame a seguir creando herramientas gratuitas para la comunidad.',
+    coffee:'Invítame a un café', coffeeAria:'Invítame a un café en Ko-fi (se abre en otra pestaña)',
+    fLeft:'Herramienta de fans · Sin afiliación con Blizzard Entertainment', fRight:'Creado para los aventureros de Santuario',
+    docTitle:'Calculadora de daño de armas de Diablo IV – Compara dos armas'
+  }
+};
+const hasLang = k => Object.prototype.hasOwnProperty.call(I18N, k);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ICONS = ['sword','axe','mace','staff','bow','dagger'];
+const MAX_MULT = 8;
+// [min, max] permitidos por campo
+const LIM = { base:[0,1e9], stat:[0,1e6], add:[0,1e6], aps:[0,10], mult:[0,1e5], cs:[0,1e6] };
+const FIELDS = [
+  { k:'base', cls:'',      lab:'base', hint:'baseHint', suffix:'' , ph:'0' },
+  { k:'stat', cls:'',      lab:'stat', hint:'statHint', suffix:'' , ph:'0' },
+  { k:'add',  cls:'',      lab:'add',  hint:'addHint',  suffix:'%', ph:'0' },
+  { k:'aps',  cls:'f-aps', lab:'aps',  hint:'apsHint',  suffix:'' , ph:'1' }
+];
+
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+function el(tag, props, ...kids){
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null) n.append(c);
+  return n;
+}
+function icon(id, cls){
+  const s = document.createElementNS(NS,'svg'); s.setAttribute('class', cls || 'ic'); s.setAttribute('aria-hidden','true');
+  const u = document.createElementNS(NS,'use'); u.setAttribute('href','#'+id); s.append(u); return s;
+}
+const safeGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const safeSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
+
+/* ---------- estado ---------- */
+const defaults = () => ({
+  mode:'hit', cs:'',
+  a:{ name:'', icon:0, base:'1280', stat:'80',  add:'140', aps:'1', mult:['25'] },
+  b:{ name:'', icon:1, base:'1195', stat:'140', add:'155', aps:'1', mult:['29'] }
+});
+const NUMCH = /^[0-9.,\s  '_]*$/;
+const cleanNum = (v, d) => (typeof v === 'string' && v.length <= 14 && NUMCH.test(v)) ? v : d;
+const cleanName = v => typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f~|]/g,'').slice(0,24) : '';
+function cleanWeapon(o, d){
+  if (!o || typeof o !== 'object') return d;
+  const mult = Array.isArray(o.mult) ? o.mult.slice(0, MAX_MULT).map(x => cleanNum(x,'')) : d.mult;
+  return {
+    name: cleanName(o.name),
+    icon: Number.isInteger(o.icon) && o.icon >= 0 && o.icon < ICONS.length ? o.icon : d.icon,
+    base: cleanNum(o.base, d.base), stat: cleanNum(o.stat, d.stat), add: cleanNum(o.add, d.add), aps: cleanNum(o.aps, d.aps),
+    mult: mult.length ? mult : ['']
+  };
+}
+function cleanState(o){
+  const d = defaults();
+  if (!o || typeof o !== 'object') return d;
+  return { mode: o.mode === 'dps' ? 'dps' : 'hit', cs: cleanNum(o.cs, ''), a: cleanWeapon(o.a, d.a), b: cleanWeapon(o.b, d.b) };
+}
+function encodeW(w){ return [w.name, w.icon, w.base, w.stat, w.add, w.aps, w.mult.join('|')].join('~'); }
+function decodeW(s){
+  if (typeof s !== 'string' || s.length > 300) return null;
+  const p = s.split('~'); if (p.length !== 7) return null;
+  return { name:p[0], icon:+p[1], base:p[2], stat:p[3], add:p[4], aps:p[5], mult:p[6].split('|') };
+}
+let lang = 'en';
+let state = defaults();
+let langFromUrl = null;
+
+(function boot(){
+  try {
+    const q = new URLSearchParams(location.search);
+    const l = q.get('lang'); if (l && hasLang(l)) langFromUrl = l;
+    const saved = safeGet('d4wc-state');
+    if (saved) state = cleanState(JSON.parse(saved));
+    const a = decodeW(q.get('a')), b = decodeW(q.get('b'));
+    if (a || b || q.has('m') || q.has('cs')) {
+      const d = defaults();
+      state = cleanState({ mode:q.get('m'), cs:q.get('cs') || '', a:a || state.a, b:b || state.b });
+      if (!a && !b) { state.a = cleanWeapon(state.a, d.a); }
+    }
+  } catch(e){ state = defaults(); }
+  const stored = safeGet('d4wc-lang');
+  const nav = (navigator.language || 'en').slice(0,2).toLowerCase();
+  lang = langFromUrl || (stored && hasLang(stored) ? stored : (hasLang(nav) ? nav : 'en'));
+})();
+const save = () => safeSet('d4wc-state', JSON.stringify(state));
+
+/* ---------- números: entrada tolerante a "1,280" "1.280,5" "1280.5" ---------- */
+function parseNum(raw){
+  let s = String(raw == null ? '' : raw).replace(/[\s  '_]/g,'');
+  if (s === '') return { empty:true };
+  if (!/^[0-9.,]+$/.test(s)) return { bad:true };
+  const thSep = lang === 'es' ? '.' : ',';
+  const grouped = (str, sep) => { const p = str.split(sep); return p[0].length >= 1 && p[0].length <= 3 && p.slice(1).every(x => x.length === 3); };
+  const dots = (s.match(/\./g) || []).length, commas = (s.match(/,/g) || []).length;
+  let int = s, frac = '';
+  if (dots && commas) {
+    const d = Math.max(s.lastIndexOf('.'), s.lastIndexOf(',')), dec = s[d], th = dec === '.' ? ',' : '.';
+    int = s.slice(0,d); frac = s.slice(d+1);
+    if (int.includes(dec) || !grouped(int, th)) return { bad:true };
+    int = int.split(th).join('');
+  } else if (dots + commas > 1) {
+    const sep = dots ? '.' : ',';
+    if (!grouped(s, sep)) return { bad:true };
+    int = s.split(sep).join('');
+  } else if (dots + commas === 1) {
+    const sep = dots ? '.' : ',';
+    const [l, r] = s.split(sep);
+    if (r.length === 3 && l.length >= 1 && l.length <= 3 && sep === thSep) int = l + r;
+    else { int = l; frac = r; }
+  }
+  if (int === '') int = '0';
+  if (!/^\d{1,12}$/.test(int) || !/^\d{0,6}$/.test(frac)) return { bad:true };
+  return { v: Number(int + (frac ? '.' + frac : '')) };
+}
+const nf = () => new Intl.NumberFormat(lang === 'es' ? 'es-ES' : 'en-US', { maximumFractionDigits:2 });
+function fmt(v){
+  if (v == null || !Number.isFinite(v)) return '—';
+  if (v >= 1e15) return v.toExponential(2);
+  return nf().format(v);
+}
+function fmtPct(v){
+  const d = v > 0 && v < 0.01 ? 4 : 2;
+  return new Intl.NumberFormat(lang === 'es' ? 'es-ES' : 'en-US', { maximumFractionDigits:d }).format(v);
+}
+function fmtX(v){ return '×' + new Intl.NumberFormat(lang === 'es' ? 'es-ES' : 'en-US', { minimumFractionDigits:2, maximumFractionDigits:3 }).format(v); }
+const fmtLim = v => new Intl.NumberFormat(lang === 'es' ? 'es-ES' : 'en-US', { maximumFractionDigits:2 }).format(v);
+
+/* ---------- cálculo ---------- */
+function evalWeapon(w){
+  const s = state[w], errs = {}, p = {};
+  let ok = true;
+  const read = (key, raw, lim, required) => {
+    const r = parseNum(raw);
+    if (r.empty) { if (required) { errs[key] = 'req'; ok = false; } return 0; }
+    if (r.bad || r.v < lim[0] || r.v > lim[1]) { errs[key] = 'range:' + lim; ok = false; return 0; }
+    return r.v;
+  };
+  const base = read('base', s.base, LIM.base, true);
+  const stat = read('stat', s.stat, LIM.stat, false);
+  const add  = read('add',  s.add,  LIM.add,  false);
+  const aps  = read('aps',  s.aps,  LIM.aps,  state.mode === 'dps');
+  let x = 1; const rows = [];
+  s.mult.forEach((raw, i) => { const v = read('m' + i, raw, LIM.mult, false); rows.push(v); x *= 1 + v / 100; });
+  // la velocidad solo cuenta en modo "por segundo"; en modo golpe sus errores se ignoran
+  if (state.mode !== 'dps') delete errs.aps;
+  const csr = parseNum(state.cs); let cs = 0, csOk = true;
+  if (!csr.empty) { if (csr.bad || csr.v < LIM.cs[0] || csr.v > LIM.cs[1]) csOk = false; else cs = csr.v; }
+  const main = 1 + (cs + stat) / 1000, addM = 1 + add / 100;
+  const hit = base * main * addM * x;
+  const out = state.mode === 'dps' ? hit * aps : hit;
+  const good = Object.keys(errs).length === 0 && csOk && Number.isFinite(out);
+  p.main = main; p.add = addM; p.x = x; p.aps = aps;
+  return { ok: good, errs, value: good ? out : null, hit, parts: p };
+}
+
+/* ---------- construcción de la UI ---------- */
+const refs = { a:{}, b:{} };
+function buildPanel(w){
+  const R = refs[w];
+  R.ribbon = el('span', { class:'ribbon' });
+  R.slot = el('p', { class:'slot', 'data-i18n': w === 'a' ? 'slotA' : 'slotB' });
+  R.name = el('input', { class:'name', id:`${w}-name`, type:'text', maxlength:'24', autocomplete:'off', spellcheck:'false', 'data-w':w, 'data-k':'name' });
+  R.mark = el('button', { class:'mark', type:'button', id:`${w}-type`, 'data-w':w }, icon('ic-sword'));
+  const head = el('div', { class:'head' }, R.mark, el('div', { class:'head-text' }, R.slot, R.name));
+  const fields = el('div', { class:'fields' });
+  R.inputs = {}; R.errs = {}; R.wraps = {}; R.flabels = {}; R.hints = {};
+  for (const f of FIELDS) {
+    const id = `${w}-${f.k}`;
+    const inp = el('input', { class:'num', id, type:'text', inputmode:'decimal', maxlength:'14', autocomplete:'off', placeholder:f.ph, 'data-w':w, 'data-k':f.k, 'aria-describedby':`${id}-h ${id}-e` });
+    const wrap = el('span', { class:'wrap' }, inp, f.suffix ? el('span', { class:'suffix', 'aria-hidden':'true', text:f.suffix }) : null);
+    const lab = el('label', { class:'flabel', for:id });
+    const hint = el('span', { class:'hint', id:`${id}-h` });
+    const err = el('span', { class:'err', id:`${id}-e` });
+    R.inputs[f.k] = inp; R.errs[f.k] = err; R.wraps[f.k] = wrap; R.flabels[f.k] = lab; R.hints[f.k] = hint;
+    fields.append(el('div', { class:'field ' + f.cls }, lab, hint, wrap, err));
+  }
+  R.multTitle = el('span', { class:'flabel' });
+  R.multHint = el('span', { class:'hint' });
+  R.multList = el('div', { class:'mult-list' });
+  R.addBtn = el('button', { class:'btn add', type:'button', 'data-w':w, 'data-act':'addm' }, icon('ic-plus'), el('span'));
+  const mults = el('div', { class:'mults' }, el('div', { class:'mults-head' }, R.multTitle, R.multHint), R.multList, R.addBtn);
+  R.label = el('span', { class:'t-label' });
+  R.out = el('output', { class:'t-num', id:`result-${w}` }, '—');
+  R.chips = el('div', { class:'chips' });
+  const total = el('div', { class:'total' }, el('div', {}, R.label, R.out), R.chips);
+  const panel = el('article', { class:'panel', 'data-w':w, id:`panel-${w}` }, R.ribbon, head, fields, mults, total);
+  R.panel = panel;
+  panel.addEventListener('pointermove', e => {
+    const r = panel.getBoundingClientRect();
+    panel.style.setProperty('--mx', (e.clientX - r.left) + 'px'); panel.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+  return panel;
+}
+function buildMults(w){
+  const R = refs[w], t = I18N[lang], rows = state[w].mult;
+  R.multInputs = [];
+  R.multList.replaceChildren(...rows.map((val, i) => {
+    const id = `${w}-mult-${i}`;
+    const inp = el('input', { class:'num', id, type:'text', inputmode:'decimal', maxlength:'14', autocomplete:'off', placeholder:'0', 'data-w':w, 'data-k':'mult', 'data-i':String(i), 'aria-label':t.multAria(w.toUpperCase(), i+1), 'aria-describedby':`${id}-e` });
+    inp.value = val;
+    const wrap = el('span', { class:'wrap' }, inp, el('span', { class:'suffix', 'aria-hidden':'true', text:'%' }));
+    const err = el('span', { class:'err', id:`${id}-e` });
+    const rm = el('button', { class:'rm', type:'button', 'data-w':w, 'data-act':'rmm', 'data-i':String(i), 'aria-label':t.rmAria(i+1) }, icon('ic-x'));
+    if (rows.length === 1) rm.disabled = true;
+    R.multInputs.push({ inp, wrap, err });
+    return el('div', { class:'mrow' }, el('span', { class:'xp', 'aria-hidden':'true', text:'×' }), el('div', { class:'mrow-col' }, wrap, err), rm);
+  }));
+  R.addBtn.disabled = rows.length >= MAX_MULT;
+}
+
+/* ---------- idioma ---------- */
+function applyLang(){
+  const t = I18N[lang];
+  document.documentElement.lang = lang;
+  document.title = t.docTitle;
+  document.querySelectorAll('[data-i18n]').forEach(n => { const v = t[n.dataset.i18n]; if (typeof v === 'string') n.textContent = v; });
+  $('formula').innerHTML = t.formula; // markup fijo del diccionario, sin datos del usuario
+  $('lang-en').setAttribute('aria-pressed', String(lang === 'en'));
+  $('lang-es').setAttribute('aria-pressed', String(lang === 'es'));
+  $('coffee').setAttribute('aria-label', t.coffeeAria);
+  for (const w of ['a','b']) {
+    const R = refs[w], S = w.toUpperCase();
+    R.name.placeholder = t[w === 'a' ? 'weaponA' : 'weaponB'];
+    R.name.setAttribute('aria-label', t.nameAria(S));
+    R.ribbon.textContent = t.winShort;
+    for (const f of FIELDS) { R.flabels[f.k].textContent = t[f.lab]; R.hints[f.k].textContent = t[f.hint]; }
+    R.multTitle.textContent = t.multTitle; R.multHint.textContent = t.multHint;
+    R.addBtn.lastChild.textContent = t.addMult;
+    buildMults(w); syncInputs(w);
+    updateMark(w);
+  }
+  syncModeButtons();
+  render(true);
+}
+function updateMark(w){
+  const t = I18N[lang], R = refs[w], i = state[w].icon;
+  R.mark.replaceChildren(icon('ic-' + ICONS[i]));
+  R.mark.setAttribute('aria-label', t.typeAria(t.types[i]));
+  R.mark.title = t.types[i];
+}
+function syncInputs(w){
+  const R = refs[w], s = state[w];
+  R.name.value = s.name;
+  for (const f of FIELDS) R.inputs[f.k].value = s[f.k];
+  R.multInputs.forEach((m, i) => { m.inp.value = s.mult[i]; });
+  $('cs').value = state.cs;
+}
+function syncModeButtons(){
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+  $('grid').dataset.mode = state.mode;
+}
+
+/* ---------- render ---------- */
+const touched = new Set();
+function setErr(wrap, errEl, code, inp){
+  const t = I18N[lang]; let msg = '';
+  if (code === 'req') msg = t.errReq;
+  else if (code && code.startsWith('range:')) { const [a, b] = code.slice(6).split(',').map(Number); msg = t.errRange(fmtLim(a), fmtLim(b)); }
+  wrap.classList.toggle('bad', !!msg);
+  inp.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  errEl.textContent = msg;
+}
+function animateNum(node, to){
+  const prev = node._v; node._v = to;
+  if (node._raf) cancelAnimationFrame(node._raf);
+  if (to == null || prev == null || reduced || prev === to) { node.textContent = fmt(to); return; }
+  const t0 = performance.now(), dur = 380;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    node.textContent = fmt(prev + (to - prev) * e);
+    if (k < 1) node._raf = requestAnimationFrame(step); else node.textContent = fmt(to);
+  };
+  node._raf = requestAnimationFrame(step);
+}
+function retrigger(node, cls){ node.classList.remove(cls); void node.offsetWidth; node.classList.add(cls); }
+let lastWinner = null;
+function render(langChanged){
+  const t = I18N[lang];
+  const res = { a: evalWeapon('a'), b: evalWeapon('b') };
+  // errores por campo (los "obligatorio" solo tras tocar el campo)
+  for (const w of ['a','b']) {
+    const R = refs[w], E = res[w].errs;
+    for (const f of FIELDS) {
+      let code = E[f.k]; if (code === 'req' && !touched.has(`${w}-${f.k}`)) code = '';
+      if (f.k === 'aps' && state.mode !== 'dps') code = '';
+      setErr(R.wraps[f.k], R.errs[f.k], code, R.inputs[f.k]);
+    }
+    R.multInputs.forEach((m, i) => setErr(m.wrap, m.err, E['m' + i], m.inp));
+    R.label.textContent = state.mode === 'dps' ? t.effDps : t.effHit;
+    animateNum(R.out, res[w].value);
+    const P = res[w].parts;
+    const chips = [[t.cMain, P.main], [t.cAdd, P.add], [t.cX, P.x]];
+    if (state.mode === 'dps') chips.push([t.cSpd, P.aps]);
+    R.chips.replaceChildren(...(res[w].ok ? chips : []).map(([k, v]) => el('span', { class:'chip' }, k, el('b', { text:fmtX(v) }))));
+  }
+  { const m = parseNum(state.cs), bad = m.bad || (!m.empty && (m.v < LIM.cs[0] || m.v > LIM.cs[1]));
+    setErr($('cs-wrap'), $('cs-err'), bad ? 'range:' + LIM.cs : '', $('cs')); }
+
+  const nameOf = w => state[w].name.trim() || t[w === 'a' ? 'weaponA' : 'weaponB'];
+  const A = res.a.value, B = res.b.value;
+  $('cn-a').textContent = nameOf('a'); $('cn-b').textContent = nameOf('b');
+  $('cn-a').title = nameOf('a'); $('cn-b').title = nameOf('b');
+  animateNum($('cv-a'), A); animateNum($('cv-b'), B);
+  $('tr-a').setAttribute('aria-label', t.barAria(nameOf('a'), fmt(A))); $('tr-b').setAttribute('aria-label', t.barAria(nameOf('b'), fmt(B)));
+
+  const V = $('verdict'), title = $('v-title'), detail = $('v-detail'), badge = $('badge');
+  refs.a.panel.classList.remove('win'); refs.b.panel.classList.remove('win');
+  let result;
+  if (A == null || B == null) {
+    result = 'pending';
+    badge.textContent = t.vWait; title.textContent = t.pendTitle; detail.textContent = t.pendDetail;
+    $('bar-a').style.width = A == null ? '0%' : '100%'; $('bar-b').style.width = B == null ? '0%' : '100%';
+  } else {
+    const max = Math.max(A, B), fr = v => max === 0 ? 0 : Math.max(0, Math.min(100, v / max * 100));
+    $('bar-a').style.width = fr(A) + '%'; $('bar-b').style.width = fr(B) + '%';
+    if (Math.abs(A - B) <= 1e-12 * max) {
+      result = 'tie'; badge.textContent = t.vTie; title.textContent = t.tieTitle; detail.textContent = t.tieDetail;
+    } else {
+      const win = A > B ? 'a' : 'b', lose = win === 'a' ? 'b' : 'a', hi = Math.max(A, B), lo = Math.min(A, B);
+      result = win; badge.textContent = t.vWin; refs[win].panel.classList.add('win');
+      title.replaceChildren();
+      if (lo === 0) { title.append(...t.zeroT(nameOf(win)).filter(Boolean)); detail.textContent = t.zeroD; }
+      else {
+        const [pre, strong] = t.winT(nameOf(win), fmtPct((hi / lo - 1) * 100));
+        title.append(pre, el('strong', { text:strong }));
+        detail.textContent = t.winD(nameOf(lose), fmtPct((1 - lo / hi) * 100), fmt(hi - lo));
+      }
+    }
+  }
+  V.dataset.r = result;
+  if (!langChanged && result !== lastWinner && result !== 'pending') { retrigger(V, 'pop'); retrigger($('vs'), 'hit'); }
+  lastWinner = result;
+  save();
+}
+
+/* ---------- eventos ---------- */
+function onInput(e){
+  const n = e.target, w = n.dataset.w, k = n.dataset.k;
+  if (n.id === 'cs') { state.cs = n.value; render(); return; }
+  if (!w || !k) return;
+  if (k === 'name') state[w].name = cleanName(n.value);
+  else if (k === 'mult') state[w].mult[+n.dataset.i] = n.value;
+  else state[w][k] = n.value;
+  render();
+}
+function onFocusOut(e){
+  const n = e.target, w = n.dataset && n.dataset.w, k = n.dataset && n.dataset.k;
+  if (k === 'name') n.scrollLeft = 0;
+  if (w && k && k !== 'name') { touched.add(`${w}-${k}`); render(); }
+}
+function onClick(e){
+  const b = e.target.closest('button'); if (!b) return;
+  const w = b.dataset.w;
+  if (b.classList.contains('mark')) { state[w].icon = (state[w].icon + 1) % ICONS.length; updateMark(w); save(); return; }
+  if (b.dataset.act === 'addm' && state[w].mult.length < MAX_MULT) {
+    state[w].mult.push(''); buildMults(w); render();
+    refs[w].multInputs[state[w].mult.length - 1].inp.focus();
+  } else if (b.dataset.act === 'rmm') {
+    const i = +b.dataset.i; if (state[w].mult.length > 1) { state[w].mult.splice(i, 1); buildMults(w); render();
+      (refs[w].multInputs[Math.min(i, state[w].mult.length - 1)] || {}).inp?.focus(); }
+  } else if (b.dataset.mode) {
+    state.mode = b.dataset.mode === 'dps' ? 'dps' : 'hit'; syncModeButtons(); render();
+  }
+}
+async function copyLink(){
+  const q = new URLSearchParams();
+  q.set('lang', lang); q.set('m', state.mode); if (state.cs) q.set('cs', state.cs);
+  q.set('a', encodeW(state.a)); q.set('b', encodeW(state.b));
+  const url = location.href.split(/[?#]/)[0] + '?' + q.toString();
+  let ok = false;
+  try { await navigator.clipboard.writeText(url); ok = true; } catch(e){
+    const ta = el('textarea', { 'aria-hidden':'true', style:'position:fixed;opacity:0' }); ta.value = url; document.body.append(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch(_){} ta.remove();
+  }
+  const lab = $('copy-label'), t = I18N[lang];
+  lab.textContent = ok ? t.copied : t.copyFail;
+  clearTimeout(copyLink._t); copyLink._t = setTimeout(() => { lab.textContent = I18N[lang].copy; }, 1800);
+}
+
+function init(){
+  const grid = $('grid'), vs = $('vs');
+  grid.insertBefore(buildPanel('a'), vs); grid.append(buildPanel('b'));
+  const tool = $('tool');
+  tool.addEventListener('input', onInput);
+  tool.addEventListener('focusout', onFocusOut);
+  tool.addEventListener('click', onClick);
+  $('lang-en').addEventListener('click', () => { lang = 'en'; safeSet('d4wc-lang', lang); applyLang(); });
+  $('lang-es').addEventListener('click', () => { lang = 'es'; safeSet('d4wc-lang', lang); applyLang(); });
+  $('swap-btn').addEventListener('click', () => {
+    [state.a, state.b] = [state.b, state.a];
+    for (const w of ['a','b']) { buildMults(w); syncInputs(w); updateMark(w); }
+    render();
+  });
+  $('reset-btn').addEventListener('click', () => {
+    const keepMode = state.mode; state = defaults(); state.mode = keepMode; touched.clear(); lastWinner = null;
+    for (const w of ['a','b']) { buildMults(w); syncInputs(w); updateMark(w); }
+    render(true);
+  });
+  $('copy-btn').addEventListener('click', copyLink);
+  // brasas flotantes
+  if (!reduced) {
+    const box = $('embers'), n = innerWidth < 600 ? 9 : 18;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement('span');
+      s.style.setProperty('--x', (Math.random() * 100).toFixed(1) + '%');
+      s.style.setProperty('--s', (2 + Math.random() * 3.5).toFixed(1) + 'px');
+      s.style.setProperty('--d', (11 + Math.random() * 12).toFixed(1) + 's');
+      s.style.setProperty('--l', (-Math.random() * 20).toFixed(1) + 's');
+      s.style.setProperty('--dx', ((Math.random() - .5) * 140).toFixed(0) + 'px');
+      box.append(s);
+    }
+  }
+  applyLang();
+}
+init();
+})();
+</script>
+</body>
+</html>
