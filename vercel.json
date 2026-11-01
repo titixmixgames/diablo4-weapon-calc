@@ -6,7 +6,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; script-src 'sha256-iGFNs3rgwbOInNSLaaIDfzf2AEdmJyNnE3Emc90qLqk='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors 'none'"
+          "value": "default-src 'none'; script-src 'sha256-iGFNs3rgwbOInNSLaaIDfzf2AEdmJyNnE3Emc90qLqk=' 'sha256-fbX953lWEZLD+gfWvQ4Ec/G8glyVafXryZ2+3akZOD4=' 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://vitals.vercel-insights.com; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors 'none'"
         },
         {
           "key": "X-Content-Type-Options",
